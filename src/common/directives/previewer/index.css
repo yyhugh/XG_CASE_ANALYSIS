@@ -1,0 +1,4 @@
+/* 鼠标样式 */
+.v-previewer-cursor {
+  cursor: url("./magnifier.cur"), pointer;
+}
