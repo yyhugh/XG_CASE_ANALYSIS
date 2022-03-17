@@ -6,7 +6,7 @@ import { createStore } from "vuex";
 import store from "../store";
 
 // router
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import routes from "../router";
 
 // 全局指令
@@ -18,6 +18,7 @@ import App from "../views/App.vue";
 // UI框架
 import ElementPlus from "element-plus";
 import "@/styles/theme/element.scss";
+import EPlusZhCn from "element-plus/es/locale/lang/zh-cn";
 
 // Cesium
 import "/node_modules/cesium/Build/Cesium/Widgets/widgets.css";
@@ -70,7 +71,9 @@ export class Application {
     const router = this.initRouter(context);
 
     // 使用中间件
-    app.use(store).use(router).use(ElementPlus);
+    app.use(store).use(router).use(ElementPlus, {
+      locale: EPlusZhCn,
+    });
 
     // 挂载到视图
     app.mount("#app");
@@ -90,7 +93,7 @@ export class Application {
    */
   private initRouter(context: ApplicationContext) {
     const router = createRouter({
-      history: createWebHistory(process.env.BASE_URL),
+      history: createWebHashHistory(process.env.BASE_URL),
       routes,
     });
     context.router = router;
