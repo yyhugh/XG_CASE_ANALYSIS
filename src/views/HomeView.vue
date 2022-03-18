@@ -96,14 +96,16 @@ watch(appLoading, () => {
   if (!viewer) {
     return;
   }
+
   // ? 该定时器是为了优化体验效果
   setTimeout(() => {
     setDefaultCamera(viewer, 3, () => {
       const layer = getAMapImageryProvider();
       // ? 该定时器是为了优化体验效果
-      setTimeout(() => {
+      setTimeout(async () => {
         viewer.imageryLayers.addImageryProvider(layer);
-        drawAreaPolyline(viewer, "深圳市");
+        await drawAreaPolyline(viewer, "深圳市");
+        await drawAreaPolyline(viewer, "深汕特别合作区");
         drawCasePoint(viewer, yesterday, yesterday); // 默认查昨日数据
         panelShow.value = true;
       }, 800);
@@ -169,25 +171,24 @@ function getGeoJSON(areaName: string): Promise<Cesium.GeoJsonDataSource> {
   return Cesium.GeoJsonDataSource.load(`static/geoJSON/${areaName}.json`);
 }
 
-function drawAreaPolyline(viewer: Cesium.Viewer, areaName: string) {
-  getGeoJSON(areaName).then((dataSource) => {
-    // 放入场景中
-    viewer.dataSources.add(dataSource);
-    // 统一修改样式
-    const entities = dataSource.entities.values;
-    entities.forEach((entity: any) => {
-      entity.polygon.material = new Cesium.Color(0, 0, 0, 0);
-      entity.polygon.outline = false;
+async function drawAreaPolyline(viewer: Cesium.Viewer, areaName: string) {
+  const dataSource = await getGeoJSON(areaName);
+  // 放入场景中
+  viewer.dataSources.add(dataSource);
+  // 统一修改样式
+  const entities = dataSource.entities.values;
+  entities.forEach((entity: any) => {
+    entity.polygon.material = new Cesium.Color(0, 0, 0, 0);
+    entity.polygon.outline = false;
 
-      // 行政区域边界线加粗
-      const positions = entity.polygon.hierarchy._value.positions;
-      entity.polyline = {
-        positions,
-        width: 6,
-        material: Cesium.Color.BLUE,
-        clampToGround: true,
-      };
-    });
+    // 行政区域边界线加粗
+    const positions = entity.polygon.hierarchy._value.positions;
+    entity.polyline = {
+      positions,
+      width: 6,
+      material: Cesium.Color.BLUE,
+      clampToGround: true,
+    };
   });
 }
 
