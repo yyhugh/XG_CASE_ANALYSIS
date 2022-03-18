@@ -48,8 +48,7 @@ const containerUUID = Extend.uuid();
 const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD");
 const panelShow = ref(false);
 const dateRange = ref([yesterday, yesterday]);
-let dataCaseList: Array<IPerson> = [];
-
+let dataCaseList: Map<string, Array<IPerson>>;
 let viewerIns: Cesium.Viewer | undefined;
 
 // 日期快捷键
@@ -171,23 +170,45 @@ async function drawAreaPolyline(viewer: Cesium.Viewer, areaName: string) {
 
 async function drawCasePoint(viewer: Cesium.Viewer, startTime: string, endTime: string) {
   const caseList = await caseService.getCaseList(startTime, endTime);
-  dataCaseList = caseList;
-  const pointList: Array<Cesium.Entity> = [];
-  caseList.forEach((person: IPerson) => {
-    const lnglat = person.position.location.split(",");
-    const name = person.id.replace("--", " 病例");
+  // 相同经纬度的合成一组
+  const group = new Map();
+  caseList.forEach((item) => {
+    const lnglatText = item.position?.location;
+    if (group.has(lnglatText)) {
+      group.get(lnglatText).push(item);
+    } else {
+      group.set(lnglatText, [item]);
+    }
+  });
+
+  const groupEntries = group.entries();
+  for (const target of groupEntries) {
+    const [lnglatText, list]: [string, Array<IPerson>] = target;
+    const lnglat = lnglatText.split(",").map((item: string) => Number.parseFloat(item));
+    const caseTotal = list.length;
+    const createTime = list[0].createTime;
+
     // 画点
-    const entity = viewer.entities.add({
-      id: person.id,
-      name,
-      position: Cesium.Cartesian3.fromDegrees(+lnglat[0], +lnglat[1]),
+    viewer.entities.add({
+      id: `case--${createTime}--${lnglatText}`,
+      position: Cesium.Cartesian3.fromDegrees(lnglat[0], lnglat[1]),
       point: {
         pixelSize: 20,
         color: new Cesium.Color(1, 0, 0, 1),
       },
     });
-    pointList.push(entity);
-  });
+    // 画label
+    viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(lnglat[0], lnglat[1]),
+      label: {
+        text: caseTotal > 1 ? String(caseTotal) : "",
+        font: "16px Hack",
+        fillColor: Cesium.Color.RED,
+        pixelOffset: new Cesium.Cartesian2(0, -20),
+      },
+    });
+  }
+  dataCaseList = group;
 }
 
 function onCaseClick(viewer: Cesium.Viewer, callback: (id: string) => void) {
@@ -196,7 +217,7 @@ function onCaseClick(viewer: Cesium.Viewer, callback: (id: string) => void) {
   handler.setInputAction((event) => {
     const pick = viewer.scene.pick(event.position);
     // 检查是否存在空间数据
-    if (Cesium.defined(pick) && pick.id.id.includes("--")) {
+    if (Cesium.defined(pick) && pick.id.id.includes("case--")) {
       callback(pick.id.id);
     }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -231,6 +252,18 @@ function onGlobeTileLoaded(viewer: Cesium.Viewer, callback: () => void) {
 function init() {
   const viewer = createViewer();
 
+  // ---调试模式---
+  // store.dispatch("loading/setAppLoading", false);
+  // setDefaultCamera(viewer, 0, async () => {
+  //   const layer = getAMapImageryProvider();
+  //   viewer.imageryLayers.addImageryProvider(layer);
+  //   await drawAreaPolyline(viewer, "深圳市");
+  //   await drawAreaPolyline(viewer, "深汕特别合作区");
+  //   drawCasePoint(viewer, yesterday, yesterday); // 默认查昨日数据
+  //   panelShow.value = true;
+  // });
+  // ---调试模式---
+
   onGlobeTileLoaded(viewer, () => {
     // 关闭全局loading
     store.dispatch("loading/setAppLoading", false);
@@ -252,12 +285,28 @@ function init() {
   });
 
   onCaseClick(viewer, (id) => {
-    ElMessage({
-      type: "success",
-      message: id,
-    });
-    const detail = dataCaseList.find((item) => item.id === id);
-    console.log(detail);
+    let lnglatText: string = id.split("--").slice(-1)[0];
+    if (typeof lnglatText === "string" && lnglatText.length > 0 && dataCaseList) {
+      for (const target of dataCaseList) {
+        const [flag, list]: [string, Array<IPerson>] = target;
+        if (flag === lnglatText) {
+          let message = "";
+          list.forEach((person, i) => {
+            if (i > 0) {
+              message += "<br><br>";
+            }
+            message += `<span>${person.id}</span>`;
+          });
+          ElMessage({
+            type: "success",
+            message,
+            dangerouslyUseHTMLString: true,
+          });
+          console.log("caseList", list);
+          break;
+        }
+      }
+    }
   });
 }
 
