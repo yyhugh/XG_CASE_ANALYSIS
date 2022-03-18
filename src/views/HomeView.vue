@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 import { RefreshLeft } from "@element-plus/icons-vue";
@@ -89,29 +89,6 @@ const shortcuts = [
 ];
 
 const store = useStore();
-const appLoading = computed(() => store.getters["loading/getAppLoading"]);
-
-watch(appLoading, () => {
-  const viewer = viewerIns as Cesium.Viewer;
-  if (!viewer) {
-    return;
-  }
-
-  // ? 该定时器是为了优化体验效果
-  setTimeout(() => {
-    setDefaultCamera(viewer, 3, () => {
-      const layer = getAMapImageryProvider();
-      // ? 该定时器是为了优化体验效果
-      setTimeout(async () => {
-        viewer.imageryLayers.addImageryProvider(layer);
-        await drawAreaPolyline(viewer, "深圳市");
-        await drawAreaPolyline(viewer, "深汕特别合作区");
-        drawCasePoint(viewer, yesterday, yesterday); // 默认查昨日数据
-        panelShow.value = true;
-      }, 800);
-    });
-  }, 2200);
-});
 
 function createViewer() {
   // 新地图信息
@@ -241,8 +218,38 @@ function refreshCamera() {
   setDefaultCamera(viewer, 2);
 }
 
+function onGlobeTileLoaded(viewer: Cesium.Viewer, callback: () => void) {
+  const eventHelper = new Cesium.EventHelper();
+  eventHelper.add(viewer.scene.globe.tileLoadProgressEvent, (event) => {
+    if (event === 0) {
+      eventHelper.removeAll();
+      callback();
+    }
+  });
+}
+
 function init() {
   const viewer = createViewer();
+
+  onGlobeTileLoaded(viewer, () => {
+    // 关闭全局loading
+    store.dispatch("loading/setAppLoading", false);
+
+    // ? 该定时器是为了优化体验效果
+    setTimeout(() => {
+      setDefaultCamera(viewer, 3, () => {
+        const layer = getAMapImageryProvider();
+        // ? 该定时器是为了优化体验效果
+        setTimeout(async () => {
+          viewer.imageryLayers.addImageryProvider(layer);
+          await drawAreaPolyline(viewer, "深圳市");
+          await drawAreaPolyline(viewer, "深汕特别合作区");
+          drawCasePoint(viewer, yesterday, yesterday); // 默认查昨日数据
+          panelShow.value = true;
+        }, 800);
+      });
+    }, 2200);
+  });
 
   onCaseClick(viewer, (id) => {
     ElMessage({
