@@ -9,7 +9,10 @@ export default {
  * 根据时间获取病例列表
  */
 async function getCaseList(startTime?: string, endTime?: string) {
-  // "2022-03-13", "2022-03-14", "2022-03-15", "2022-03-16"
+  // TODO
+  // const time = dayjs().subtract(2, "day").format("YYYY-MM-DD");
+  // startTime = time;
+  // endTime = time;
 
   const timeline: Array<string> = [];
   let diff = dayjs(endTime).diff(dayjs(startTime), "days");
