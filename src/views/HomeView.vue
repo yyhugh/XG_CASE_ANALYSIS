@@ -481,12 +481,16 @@ function init() {
         const [flag, list]: [string, Array<IPerson>] = target;
         if (flag === lnglatText) {
           let message = "";
-          list.forEach((person, i) => {
+          for (let i = 0, l = list.length; i < l; i++) {
             if (i > 0) {
               message += "<br><br>";
             }
-            message += `<span>${person.id}</span>`;
-          });
+            message += `<span>${list[i].id}</span>`;
+            if (i > 4) {
+              message += `<br><br><span>(剩余${l - 1 - i}条数据未展示)</span>`;
+              break;
+            }
+          }
           ElMessage({
             type: "success",
             message,
