@@ -284,7 +284,7 @@ async function drawHeatmap(viewer: Cesium.Viewer, group: Map<string, Array<IPers
     points.push({
       x: (width * leftScale) >> 0,
       y: (height * (1 - topScale)) >> 0,
-      value: count,
+      value: 20,
       radius: 20,
     });
   }
@@ -300,7 +300,7 @@ async function drawHeatmap(viewer: Cesium.Viewer, group: Map<string, Array<IPers
   cvs.height = height;
 
   const data: any = {
-    max,
+    max: 20,
     data: points,
   };
   heatmap.setData(data);
