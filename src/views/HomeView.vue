@@ -16,6 +16,7 @@
           :shortcuts="shortcuts"
           start-placeholder="Start date"
           end-placeholder="End date"
+          :disabledDate="disabledDate"
           @change="onDateRangeChange"
         ></el-date-picker>
       </div>
@@ -347,6 +348,23 @@ function onCaseClick(viewer: Cesium.Viewer, callback: (id: string) => void) {
       callback(pick.id.id);
     }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
+
+/**
+ * 日期选择器设置可选区间
+ */
+function disabledDate(date: Date) {
+  const min = "2022-03-13";
+  const max = yesterday;
+  const diffMin = dayjs(date).diff(dayjs(min), "days");
+  const diffMax = dayjs(date).diff(dayjs(max), "days");
+
+  // 默认全部禁用，在区间范围才开启
+  let disable = true;
+  if (diffMin >= 0 && diffMax <= 0) {
+    return false;
+  }
+  return disable;
 }
 
 /**
