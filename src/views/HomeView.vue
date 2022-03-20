@@ -165,14 +165,18 @@ function setDefaultCamera(viewer: Cesium.Viewer, duration = 3, complete?: any) {
 /**
  * 获取高德地图矢量图层
  */
-function getAMapImageryProvider() {
-  // 高德地图矢量图层
-  const layer = new Cesium.UrlTemplateImageryProvider({
-    url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-    minimumLevel: 4,
-    maximumLevel: 18,
+function getAMapImageryProvider(): Promise<Cesium.UrlTemplateImageryProvider> {
+  return new Promise((resolve, reject) => {
+    // 高德地图矢量图层
+    const layer = new Cesium.UrlTemplateImageryProvider({
+      url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+      minimumLevel: 4,
+      maximumLevel: 18,
+    });
+    layer.readyPromise.then(() => {
+      resolve(layer);
+    });
   });
-  return layer;
 }
 
 /**
@@ -218,12 +222,24 @@ async function drawCasePoint(viewer: Cesium.Viewer, group: Map<string, Array<IPe
     const createTime = list[0].createTime;
 
     // 画点
+    // viewer.entities.add({
+    //   id: `case--${createTime}--${lnglatText}`,
+    //   position: Cesium.Cartesian3.fromDegrees(lnglat[0], lnglat[1]),
+    //   point: {
+    //     pixelSize: 20,
+    //     color: new Cesium.Color(1, 0, 0, 1),
+    //   },
+    // });
+    // 画图片
     viewer.entities.add({
       id: `case--${createTime}--${lnglatText}`,
-      position: Cesium.Cartesian3.fromDegrees(lnglat[0], lnglat[1]),
-      point: {
-        pixelSize: 20,
+      position: Cesium.Cartesian3.fromDegrees(lnglat[0], lnglat[1], 0),
+      billboard: {
+        image: "./static/img/xg.svg",
         color: new Cesium.Color(1, 0, 0, 1),
+        width: 24,
+        height: 24,
+        sizeInMeters: false,
       },
     });
     // 画label
@@ -232,8 +248,12 @@ async function drawCasePoint(viewer: Cesium.Viewer, group: Map<string, Array<IPe
       label: {
         text: caseTotal > 1 ? String(caseTotal) : "",
         font: "16px Hack",
+        style: 2,
         fillColor: Cesium.Color.RED,
-        pixelOffset: new Cesium.Cartesian2(0, -20),
+        pixelOffset: new Cesium.Cartesian2(0, -22),
+        outlineWidth: 10,
+        // outlineColor: new Cesium.Color(183, 28, 28, 1),
+        outlineColor: new Cesium.Color(21, 101, 192, 1), // rgba(21,101,192,1)
       },
     });
   }
@@ -333,6 +353,63 @@ async function drawHeatmap(viewer: Cesium.Viewer, group: Map<string, Array<IPers
   //     material: Cesium.Color.RED.withAlpha(0.2),
   //   },
   // });
+}
+
+const minorAxisOptions: { [propName: string]: any } = {
+  lnglat: [114.18274, 22.633947],
+  max: 66000,
+  min: 0,
+  step: 400,
+  interval: 2000,
+  r: 0,
+};
+
+const majorAxisOptions: { [propName: string]: any } = {
+  lnglat: [114.18274, 22.633947],
+  max: 66000,
+  min: 0,
+  step: 400.01,
+  interval: 2000,
+  r: 0,
+};
+
+function sizeChange(options: any, callback?: () => void) {
+  options.r += options.step;
+  if (options.r >= options.max) {
+    options.r = options.min;
+    callback && callback();
+  }
+  return options.r;
+}
+
+/**
+ * 绘制扩散环
+ */
+function drawSpreadRing(viewer: Cesium.Viewer, count = 1, callback?: () => void) {
+  const lnglat = [114.18274, 22.633947];
+  const entity = viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(lnglat[0], lnglat[1]),
+    ellipse: {
+      // 半短轴
+      // semiMinorAxis: new Cesium.CallbackProperty(() => sizeChange(minorAxisOptions), false),
+      semiMinorAxis: new Cesium.CallbackProperty(() => {
+        return sizeChange(minorAxisOptions, () => {
+          count--;
+          if (count === 0) {
+            viewer.entities.remove(entity);
+            callback && callback();
+          }
+        });
+      }, false),
+      // 半长轴
+      semiMajorAxis: new Cesium.CallbackProperty(() => sizeChange(majorAxisOptions), false),
+      height: 1,
+      material: new Cesium.ImageMaterialProperty({
+        image: "./static/img/spread-ring.svg",
+        transparent: true,
+      }),
+    },
+  });
 }
 
 /**
@@ -441,11 +518,13 @@ function onDrawModeChange(type: "point" | "heatmap") {
   }
   const viewer = viewerIns as Cesium.Viewer;
   viewer.entities.removeAll();
-  if (type === "point") {
-    drawCasePoint(viewer, group);
-  } else if (type === "heatmap") {
-    drawHeatmap(viewer, group);
-  }
+  drawSpreadRing(viewer, 1, () => {
+    if (type === "point") {
+      drawCasePoint(viewer, group);
+    } else if (type === "heatmap") {
+      drawHeatmap(viewer, group);
+    }
+  });
 }
 
 /**
@@ -458,20 +537,80 @@ function init() {
     store.dispatch("loading/setAppLoading", false); // 关闭全局loading
     // ? 该定时器是为了优化体验效果
     setTimeout(() => {
-      setDefaultCamera(viewer, 3, () => {
-        const layer = getAMapImageryProvider();
+      setDefaultCamera(viewer, 3, async () => {
+        const layer = await getAMapImageryProvider();
+        viewer.imageryLayers.addImageryProvider(layer);
+        await drawAreaPolyline(viewer, "深圳市");
+        await drawAreaPolyline(viewer, "深汕特别合作区");
         // ? 该定时器是为了优化体验效果
         setTimeout(async () => {
-          viewer.imageryLayers.addImageryProvider(layer);
-          await drawAreaPolyline(viewer, "深圳市");
-          await drawAreaPolyline(viewer, "深汕特别合作区");
           const { group } = await getCaseList(yesterday, yesterday);
-          drawCasePoint(viewer, group); // 默认查昨日数据
+          drawSpreadRing(viewer, 1, () => {
+            drawCasePoint(viewer, group); // 默认查昨日数据
+            panelShow.value = true;
+          });
           // drawHeatmap(viewer, group); // 默认查昨日数据
-          panelShow.value = true;
         }, 800);
       });
     }, 2200);
+  });
+
+  onCaseClick(viewer, (id) => {
+    let lnglatText: string = id.split("--").slice(-1)[0];
+    if (typeof lnglatText === "string" && lnglatText.length > 0 && dataCaseGroup) {
+      for (const target of dataCaseGroup) {
+        const [flag, list]: [string, Array<IPerson>] = target;
+        if (flag === lnglatText) {
+          let message = "";
+          for (let i = 0, l = list.length; i < l; i++) {
+            if (i > 0) {
+              message += "<br><br>";
+            }
+            message += `<span>${list[i].id}</span>`;
+            if (i >= 4 && l !== 5) {
+              message += `<br><br><span>(剩余${l - 1 - i}条数据未展示)</span>`;
+              break;
+            }
+          }
+          ElMessage({
+            type: "success",
+            message,
+            dangerouslyUseHTMLString: true,
+          });
+          console.log(list);
+          break;
+        }
+      }
+    }
+  });
+}
+
+/**
+ * 销毁
+ */
+function destroy() {
+  viewerIns?.destroy();
+  viewerIns = undefined;
+}
+
+/**
+ * TODO 调试模式
+ */
+function testInit() {
+  const viewer = createViewer();
+
+  store.dispatch("loading/setAppLoading", false);
+  setDefaultCamera(viewer, 0, async () => {
+    const layer = await getAMapImageryProvider();
+    viewer.imageryLayers.addImageryProvider(layer);
+    await drawAreaPolyline(viewer, "深圳市");
+    await drawAreaPolyline(viewer, "深汕特别合作区");
+    const { list, group } = await getCaseList(yesterday, yesterday);
+    drawSpreadRing(viewer, 1, () => {
+      drawCasePoint(viewer, group); // 默认查昨日数据
+      // drawHeatmap(viewer, group); // 默认查昨日数据
+    });
+    panelShow.value = true;
   });
 
   onCaseClick(viewer, (id) => {
@@ -496,38 +635,11 @@ function init() {
             message,
             dangerouslyUseHTMLString: true,
           });
-          console.log("caseList", list);
+          console.log(list);
           break;
         }
       }
     }
-  });
-}
-
-/**
- * 销毁
- */
-function destroy() {
-  viewerIns?.destroy();
-  viewerIns = undefined;
-}
-
-/**
- * TODO 调试模式
- */
-function testInit() {
-  const viewer = createViewer();
-
-  store.dispatch("loading/setAppLoading", false);
-  setDefaultCamera(viewer, 0, async () => {
-    const layer = getAMapImageryProvider();
-    viewer.imageryLayers.addImageryProvider(layer);
-    await drawAreaPolyline(viewer, "深圳市");
-    await drawAreaPolyline(viewer, "深汕特别合作区");
-    const { list, group } = await getCaseList(yesterday, yesterday);
-    // drawCasePoint(viewer, group); // 默认查昨日数据
-    // drawHeatmap(viewer, group); // 默认查昨日数据
-    panelShow.value = true;
   });
 }
 
