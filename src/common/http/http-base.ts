@@ -1,7 +1,7 @@
 import Axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import qs from "qs";
 import { IHttpRequest, IHttpResponse } from "./i-http";
-import { Extend } from "@/common/utils";
+import { ExtendUtil } from "@/common/utils";
 
 /**
  * http请求服务基类
@@ -103,7 +103,7 @@ export default abstract class HttpClientBase {
 
       // ? /user/{id}
       if (request.urlPath) {
-        config.url = Extend.stringUrlPath(request.url as string, request.urlPath);
+        config.url = ExtendUtil.stringUrlPath(request.url as string, request.urlPath);
       }
     } else {
       switch (request.serializeType) {

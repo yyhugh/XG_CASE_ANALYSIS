@@ -36,12 +36,12 @@ import * as Cesium from "cesium";
 import h337 from "heatmap.js";
 import dayjs from "dayjs";
 import { ApplicationContext } from "@/application";
-import { Extend } from "@/common/utils";
+import { ExtendUtil } from "@/common/utils";
 import { caseService } from "@/services";
 import { IPerson } from "@/models";
 
 const context = ApplicationContext.current;
-const containerUUID = Extend.uuid();
+const containerUUID = ExtendUtil.uuid();
 const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD");
 
 // 状态
@@ -183,7 +183,7 @@ function getAMapImageryProvider(): Promise<Cesium.UrlTemplateImageryProvider> {
  * 根据区域名称读取本地geoJSON文件
  */
 function getGeoJSON(areaName: string): Promise<Cesium.GeoJsonDataSource> {
-  return Cesium.GeoJsonDataSource.load(`static/geoJSON/${areaName}.json`);
+  return Cesium.GeoJsonDataSource.load(`/static/geoJSON/${areaName}.json`);
 }
 
 /**
