@@ -1,0 +1,163 @@
+[
+  {
+    "id": "2022-03-25--1",
+    "createTime": "2022-03-25",
+    "name": "病例1",
+    "sex": 1,
+    "age": 51,
+    "address": "罗湖区南湖街道和平路1085号",
+    "source": 1,
+    "position": {
+      "name": "街电(蓬客精品酒店万象城店)",
+      "id": "B0FFM6M9XE",
+      "location": "114.115871,22.538333",
+      "type": "生活服务;共享设备;充电宝",
+      "typecode": "072101",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "罗湖区",
+      "address": "和平路1076号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440303"
+    }
+  },
+  {
+    "id": "2022-03-25--2",
+    "createTime": "2022-03-25",
+    "name": "病例2",
+    "sex": 1,
+    "age": 48,
+    "address": "罗湖区南湖街道和平路1085号",
+    "source": 1,
+    "position": {
+      "name": "街电(蓬客精品酒店万象城店)",
+      "id": "B0FFM6M9XE",
+      "location": "114.115871,22.538333",
+      "type": "生活服务;共享设备;充电宝",
+      "typecode": "072101",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "罗湖区",
+      "address": "和平路1076号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440303"
+    }
+  },
+  {
+    "id": "2022-03-25--3",
+    "createTime": "2022-03-25",
+    "name": "病例3",
+    "sex": 1,
+    "age": 39,
+    "address": "罗湖区南湖街道和平路1085号",
+    "source": 1,
+    "position": {
+      "name": "街电(蓬客精品酒店万象城店)",
+      "id": "B0FFM6M9XE",
+      "location": "114.115871,22.538333",
+      "type": "生活服务;共享设备;充电宝",
+      "typecode": "072101",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "罗湖区",
+      "address": "和平路1076号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440303"
+    }
+  },
+  {
+    "id": "2022-03-25--4",
+    "createTime": "2022-03-25",
+    "name": "病例4",
+    "sex": 1,
+    "age": 11,
+    "address": "罗湖区黄贝街道福德花园",
+    "source": 1,
+    "position": {
+      "name": "福德花园(清平路)",
+      "id": "B02F37VD0T",
+      "location": "114.133326,22.54634",
+      "type": "商务住宅;住宅区;住宅小区",
+      "typecode": "120302",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "罗湖区",
+      "address": "深南东路1110号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440303"
+    }
+  },
+  {
+    "id": "2022-03-25--5",
+    "createTime": "2022-03-25",
+    "name": "病例5",
+    "sex": 1,
+    "age": 27,
+    "address": "罗湖区东门街道天玺一号",
+    "source": 1,
+    "position": {
+      "name": "天玺1号",
+      "id": "B0FFFEXX6C",
+      "location": "114.123796,22.551731",
+      "type": "商务住宅;住宅区;住宅小区",
+      "typecode": "120302",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "罗湖区",
+      "address": "东门童乐路2号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440303"
+    }
+  },
+  {
+    "id": "2022-03-25--6",
+    "createTime": "2022-03-25",
+    "name": "病例6",
+    "sex": 2,
+    "age": 48,
+    "address": "福田区沙头街道下沙村四坊",
+    "source": 2,
+    "position": {
+      "name": "下沙村四坊",
+      "id": "B0FFF6W3PE",
+      "location": "114.025838,22.524536",
+      "type": "商务住宅;住宅区;住宅小区",
+      "typecode": "120302",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "福田区",
+      "address": "福荣路68万科金域蓝湾附近",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440304"
+    }
+  },
+  {
+    "id": "2022-03-25--7",
+    "createTime": "2022-03-25",
+    "name": "病例7",
+    "sex": 1,
+    "age": 33,
+    "address": "大鹏新区葵涌街道葵福嘉园",
+    "source": 1,
+    "position": {
+      "name": "葵福嘉园",
+      "id": "B0FFF6NTT5",
+      "location": "114.415808,22.630795",
+      "type": "商务住宅;住宅区;住宅小区",
+      "typecode": "120302",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "龙岗区",
+      "address": "葵兴西路28号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440307"
+    }
+  }
+]

@@ -1,0 +1,71 @@
+[
+  {
+    "id": "2022-03-24--1",
+    "createTime": "2022-03-24",
+    "name": "病例1",
+    "sex": 1,
+    "age": 36,
+    "address": "福田区沙头街道上沙塘晏村10巷",
+    "source": 1,
+    "position": {
+      "name": "上沙塘晏村十巷11号楼",
+      "id": "B0FFG1KVVP",
+      "location": "114.034403,22.522324",
+      "type": "地名地址信息;门牌信息;楼栋号",
+      "typecode": "190403",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "福田区",
+      "address": "福荣路上沙塘晏村十巷11号楼",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440304"
+    }
+  },
+  {
+    "id": "2022-03-24--2",
+    "createTime": "2022-03-24",
+    "name": "病例2",
+    "sex": 2,
+    "age": 56,
+    "address": "福田区香蜜湖街道侨香村",
+    "source": 1,
+    "position": {
+      "name": "侨香村",
+      "id": "B02F37W70U",
+      "location": "114.013605,22.55285",
+      "type": "商务住宅;住宅区;住宅小区",
+      "typecode": "120302",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "福田区",
+      "address": "侨香路2008号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440304"
+    }
+  },
+  {
+    "id": "2022-03-24--3",
+    "createTime": "2022-03-24",
+    "name": "病例3",
+    "sex": 1,
+    "age": 47,
+    "address": "罗湖区南湖街道和平路1085号",
+    "source": 1,
+    "position": {
+      "name": "街电(蓬客精品酒店万象城店)",
+      "id": "B0FFM6M9XE",
+      "location": "114.115871,22.538333",
+      "type": "生活服务;共享设备;充电宝",
+      "typecode": "072101",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "罗湖区",
+      "address": "和平路1076号",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440303"
+    }
+  }
+]

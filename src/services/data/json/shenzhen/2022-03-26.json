@@ -1,0 +1,48 @@
+[
+  {
+    "id": "2022-03-26--1",
+    "createTime": "2022-03-26",
+    "name": "病例1",
+    "sex": 1,
+    "age": 18,
+    "address": "南山区南山街道南园工业园北区",
+    "source": 1,
+    "position": {
+      "name": "南园工业园北区",
+      "id": "B0FFHE500W",
+      "location": "113.919966,22.517746",
+      "type": "商务住宅;产业园区;产业园区",
+      "typecode": "120100",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "南山区",
+      "address": "南园新园路30",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440305"
+    }
+  },
+  {
+    "id": "2022-03-26--2",
+    "createTime": "2022-03-26",
+    "name": "病例2",
+    "sex": 2,
+    "age": 35,
+    "address": "福田区沙头街道上沙塘晏村5巷",
+    "source": 1,
+    "position": {
+      "name": "上沙塘晏村五巷1号楼",
+      "id": "B0FFFA6K20",
+      "location": "114.032716,22.523721",
+      "type": "地名地址信息;门牌信息;楼栋号",
+      "typecode": "190403",
+      "pname": "广东省",
+      "cityname": "深圳市",
+      "adname": "福田区",
+      "address": "福田区",
+      "pcode": "440000",
+      "citycode": "0755",
+      "adcode": "440304"
+    }
+  }
+]
