@@ -13,7 +13,6 @@
           type="daterange"
           v-model="dateRange"
           :clearable="false"
-          :shortcuts="shortcuts"
           start-placeholder="Start date"
           end-placeholder="End date"
           :disabledDate="disabledDate"
@@ -42,7 +41,7 @@ import { IPerson } from "@/models";
 
 const context = ApplicationContext.current;
 const containerUUID = ExtendUtil.uuid();
-const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+const yesterday = "2022-03-13";
 
 // 状态
 const panelShow = ref(false);
@@ -432,7 +431,7 @@ function onCaseClick(viewer: Cesium.Viewer, callback: (id: string) => void) {
  */
 function disabledDate(date: Date) {
   const min = "2022-03-13";
-  const max = yesterday;
+  const max = "2022-03-28";
   const diffMin = dayjs(date).diff(dayjs(min), "days");
   const diffMax = dayjs(date).diff(dayjs(max), "days");
 
@@ -682,6 +681,7 @@ onBeforeUnmount(() => {
     display: flex;
     :deep(.ctrl) {
       margin: 0 15px 0 0;
+      width: 220px;
       &.refresh {
         font-size: 16px;
         color: red;
